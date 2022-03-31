@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-header>
-      <a href="/index">woodwhales-code-generator</a>
+      <el-link href="/index" :underline="false" style="font-size: larger">woodwhales-code-generator</el-link>
     </el-header>
     <el-main>
       <el-menu mode="horizontal" :default-active="$route.path" router>
@@ -35,7 +35,6 @@ export default {
   color: #333;
   min-height: 100%;
   height: 100%;
-  text-align: center;
 }
 
 body > .el-container {
