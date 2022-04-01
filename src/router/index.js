@@ -3,8 +3,10 @@ import Router from 'vue-router'
 import Index from '@/components/Index'
 import CodeGenerator from '@/components/CodeGenerator'
 import Connection from '@/components/Connection'
+import axios from '@/axios';
 
-Vue.use(Router)
+Vue.use(Router);
+Vue.prototype.$axios = axios;
 
 export default new Router({
   mode: "history",
