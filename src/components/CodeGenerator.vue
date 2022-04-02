@@ -164,13 +164,13 @@
         <!-- ORM框架 -->
         <el-row v-if="dbForm.system.process === 3">
           <el-form-item>
-            <el-col :span="6">
+            <el-col :span="12">
               <el-form-item label="ORM框架" prop="dbConfig.orm">
                   <el-radio v-model="dbForm.dbConfig.orm" label="MyBatis">My Batis</el-radio>
                   <el-radio v-model="dbForm.dbConfig.orm" label="MyBatisPlus">My BatisPlus</el-radio>
               </el-form-item>
             </el-col>
-            <el-col :span="18"></el-col>
+            <el-col :span="12"></el-col>
           </el-form-item>
         </el-row>
 
