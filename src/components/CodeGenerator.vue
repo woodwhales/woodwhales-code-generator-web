@@ -2,14 +2,14 @@
   <div class="main-body">
     <el-row>
       <el-form ref="ruleForm" :model="dbForm" label-width="120px" :rules="rules">
-        <!-- 数据库类型 -->
+        <!-- 驱动配置 -->
         <el-row>
-          <el-form-item label="基础配置" prop="dbType">
+          <el-form-item label="驱动配置" prop="dbType">
             <el-col :span="6">
               <el-form-item label="驱动类型" prop="generateCode">
                 <el-radio-group v-model="dbForm.dbConfig.dbType" @change="changeDbType($event)">
-                  <el-radio label="MYSQL">MYSQL</el-radio>
-                  <el-radio label="ORACLE">Oracle</el-radio>
+                  <el-radio label="MYSQL" border>MYSQL</el-radio>
+                  <el-radio label="ORACLE" border>Oracle</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -19,64 +19,6 @@
               </el-form-item>
             </el-col>
             <el-col :span="12"></el-col>
-          </el-form-item>
-        </el-row>
-        <!-- 文件配置 -->
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="文件配置" prop="dbType">
-              <el-row>
-                <el-col :span="8">
-                  <el-form-item label="生成代码" prop="generateCode">
-                    <el-switch v-model="dbForm.dbConfig.generateCode" active-color="#13ce66"
-                               inactive-color="#ff4949"></el-switch>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="覆盖代码" prop="overCode">
-                    <el-switch v-model="dbForm.dbConfig.overCode" active-color="#13ce66"
-                               inactive-color="#ff4949"></el-switch>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="8">
-                  <el-form-item label="覆盖文档" prop="overMarkdown">
-                    <el-switch v-model="dbForm.dbConfig.overMarkdown" active-color="#13ce66"
-                               inactive-color="#ff4949"></el-switch>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12"></el-col>
-        </el-row>
-        <!-- 代码配置 -->
-        <el-row>
-          <el-form-item label="代码配置">
-            <el-col :span="4">
-              <el-form-item label="markdown" prop="generateMarkdown">
-                <el-switch v-model="dbForm.dbConfig.generateMarkdown" active-color="#13ce66" inactive-color="#ff4949">
-                </el-switch>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="controller" prop="generateController">
-                <el-switch v-model="dbForm.dbConfig.generateController" active-color="#13ce66" inactive-color="#ff4949">
-                </el-switch>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="service" prop="generateService">
-                <el-switch v-model="dbForm.dbConfig.generateService" active-color="#13ce66" inactive-color="#ff4949">
-                </el-switch>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="batchMapper" prop="generateBatchMapper">
-                <el-switch v-model="dbForm.dbConfig.generateBatchMapper" active-color="#13ce66"
-                           inactive-color="#ff4949">
-                </el-switch>
-              </el-form-item>
-            </el-col>
           </el-form-item>
         </el-row>
         <!-- 链接配置1 -->
@@ -141,7 +83,7 @@
           </el-form-item>
         </el-row>
         <!-- 生成代码 -->
-        <el-row v-if="dbForm.system.process === 3">
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
           <el-form-item label="生成配置">
             <el-col :span="6">
               <el-form-item label="项目路径" prop="dbConfig.generateDir">
@@ -162,20 +104,79 @@
           </el-form-item>
         </el-row>
         <!-- ORM框架 -->
-        <el-row v-if="dbForm.system.process === 3">
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="ORM框架" prop="dbConfig.orm">
-                  <el-radio v-model="dbForm.dbConfig.orm" label="MyBatis">My Batis</el-radio>
-                  <el-radio v-model="dbForm.dbConfig.orm" label="MyBatisPlus">My BatisPlus</el-radio>
+                <el-radio-group v-model="dbForm.dbConfig.orm" @change="changeOrm($event)">
+                  <el-radio label="MyBatis" border>My Batis</el-radio>
+                  <el-radio label="MyBatisPlus" border>My BatisPlus</el-radio>
+                </el-radio-group>
               </el-form-item>
             </el-col>
             <el-col :span="12"></el-col>
           </el-form-item>
         </el-row>
-
+        <!-- 文件配置 -->
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+          <el-col :span="12">
+            <el-form-item label="文件配置" prop="dbType">
+              <el-row>
+                <el-col :span="8">
+                  <el-form-item label="生成代码" prop="generateCode">
+                    <el-switch v-model="dbForm.dbConfig.generateCode" active-color="#13ce66"
+                               inactive-color="#ff4949"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="覆盖代码" prop="overCode">
+                    <el-switch v-model="dbForm.dbConfig.overCode" active-color="#13ce66"
+                               inactive-color="#ff4949"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="8">
+                  <el-form-item label="覆盖文档" prop="overMarkdown">
+                    <el-switch v-model="dbForm.dbConfig.overMarkdown" active-color="#13ce66"
+                               inactive-color="#ff4949"></el-switch>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12"></el-col>
+        </el-row>
+        <!-- 代码配置 -->
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+          <el-form-item label="代码配置">
+            <el-col :span="4">
+              <el-form-item label="markdown" prop="generateMarkdown">
+                <el-switch v-model="dbForm.dbConfig.generateMarkdown" active-color="#13ce66" inactive-color="#ff4949">
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="controller" prop="generateController">
+                <el-switch v-model="dbForm.dbConfig.generateController" active-color="#13ce66" inactive-color="#ff4949">
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="service" prop="generateService">
+                <el-switch v-model="dbForm.dbConfig.generateService" active-color="#13ce66" inactive-color="#ff4949">
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="batchMapper" prop="generateBatchMapper" v-show="dbForm.dbConfig.orm === 'MyBatisPlus'">
+                <el-switch v-model="dbForm.dbConfig.generateBatchMapper" active-color="#13ce66"
+                           inactive-color="#ff4949">
+                </el-switch>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+        </el-row>
         <!-- 父类、接口 -->
-        <el-row v-if="dbForm.system.process === 3">
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
           <el-form-item>
             <el-col :span="6">
               <el-form-item label="父类类名">
@@ -186,7 +187,7 @@
           </el-form-item>
         </el-row>
 
-        <el-row v-if="dbForm.system.process === 3">
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
           <el-form-item>
             <el-col :span="24">
               <el-form-item label="接口类名">
@@ -211,6 +212,24 @@
               </el-form-item>
             </el-col>
           </el-form-item>
+        </el-row>
+
+        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+          <el-col :span="24">
+            <el-form-item label="数据库表">
+              <el-table ref="multipleTable" :data="dbForm.temp.tableInfoList" style="width: 100%" @selection-change="selectTableInfo">
+                <el-table-column type="selection" width="100"></el-table-column>
+                <el-table-column prop="dbName" label="表名" width="250"></el-table-column>
+                <el-table-column prop="name" label="类名" width="250"></el-table-column>
+                <el-table-column prop="comment" label="注释" width="250"></el-table-column>
+                <el-table-column prop="keys" label="主键" width="250">
+                  <template slot-scope="scope">
+                    <span style="margin-left: 10px">{{ scope.row.keys.join(',') }}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-col>
         </el-row>
 
         <el-row>
@@ -243,7 +262,8 @@ export default {
           schemas: [],
           dbVersion: '',
           interfaceName: '',
-          inputVisible: false
+          inputVisible: false,
+          tableInfoList: []
         },
         dbConfig: {
           dbType: 'MYSQL',
@@ -254,7 +274,7 @@ export default {
           generateMarkdown: false,
           generateController: false,
           generateService: false,
-          generateBatchMapper: true,
+          generateBatchMapper: false,
           ip: '127.0.0.1',
           port: '3306',
           sid: 'orcl',
@@ -266,7 +286,10 @@ export default {
           author: '',
           orm: '',
           superClass: '',
-          interfaceList: []
+          interfaceList: [],
+          dbNameList: [],
+          tableKey: '',
+          selectAll: false
         }
       },
       rules: {
@@ -322,6 +345,8 @@ export default {
       this.dbForm.dbConfig.orm = null;
       this.dbForm.dbConfig.interfaceList = [];
       this.dbForm.dbConfig.superClass = '';
+      this.dbForm.dbConfig.dbNameList = [];
+      this.dbForm.dbConfig.tableKey = '';
       this.dbForm.system.btnType = '';
       this.dbForm.system.btnTxt = '测试';
     },
@@ -334,6 +359,12 @@ export default {
         this.dbForm.dbConfig.driverClassName = 'oracle.jdbc.OracleDriver'
         this.dbForm.dbConfig.port = 1521
         this.dbForm.dbConfig.sid = 'orcl'
+      }
+    },
+    changeOrm($event) {
+      console.log($event);
+      if($event === 'MyBatis') {
+        this.dbForm.dbConfig.generateBatchMapper = false;
       }
     },
     submitForm(formName) {
@@ -352,7 +383,12 @@ export default {
             this.$axios.post('/generate/buildTableInfos', this.dbForm.dbConfig)
               .then(res => {
                 this.proccess3();
-
+                this.dbForm.system.btnType = '';
+                this.dbForm.dbConfig.interfaceList = [];
+                this.dbForm.system.btnTxt = '生成';
+                this.dbForm.temp.tableInfoList = res.tableInfos;
+                this.dbForm.dbConfig.tableKey = res.dataBaseInfoKey;
+                this.dbForm.dbConfig.proccess = 4;
               });
           }
 
@@ -400,18 +436,15 @@ export default {
     handleClose(interfaceName) {
       this.dbForm.dbConfig.interfaceList.splice(this.dbForm.dbConfig.interfaceList.indexOf(interfaceName), 1);
     },
-
     showInput() {
       this.dbForm.temp.inputVisible = true;
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus();
       });
     },
-
     handleInputConfirm() {
       let inputValue = this.dbForm.temp.interfaceName;
-      if (inputValue) {
-
+      if (inputValue !== '') {
         let set = new Set(this.dbForm.dbConfig.interfaceList);
         if(!set.has(inputValue)) {
           this.dbForm.dbConfig.interfaceList.push(inputValue);
@@ -421,6 +454,20 @@ export default {
       }
       this.dbForm.temp.inputVisible = false;
       this.dbForm.temp.interfaceName = '';
+    },
+    selectTableInfo: function (val) {
+      console.log('a', val);
+      let dbNameList = [];
+
+      val.map((item) => {
+        dbNameList.push(item.dbName)
+      });
+
+      if (val.length > 0 && val.length === this.dbForm.temp.tableInfoList.length) {
+        this.dbForm.dbConfig.selectAll = true
+      }
+
+      this.dbForm.dbConfig.dbNameList = dbNameList;
     }
   }
 }
