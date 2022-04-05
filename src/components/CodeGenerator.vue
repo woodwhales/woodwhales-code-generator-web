@@ -5,7 +5,7 @@
         <!-- 驱动配置 -->
         <el-row>
           <el-form-item label="驱动配置" prop="dbType">
-            <el-col :span="6">
+            <el-col :span="12">
               <el-form-item label="驱动类型" prop="generateCode">
                 <el-radio-group v-model="dbForm.dbConfig.dbType" @change="changeDbType($event)">
                   <el-radio label="MYSQL" border>MYSQL</el-radio>
@@ -13,12 +13,11 @@
                 </el-radio-group>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="12" v-show="false">
               <el-form-item label="驱动类名" prop="driverClassName">
                 <el-input v-model="dbForm.dbConfig.driverClassName" :disabled="true"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12"></el-col>
           </el-form-item>
         </el-row>
         <!-- 链接配置1 -->
@@ -83,7 +82,7 @@
           </el-form-item>
         </el-row>
         <!-- 生成代码 -->
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-form-item label="生成配置">
             <el-col :span="6">
               <el-form-item label="项目路径" prop="dbConfig.generateDir">
@@ -104,7 +103,7 @@
           </el-form-item>
         </el-row>
         <!-- ORM框架 -->
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-form-item>
             <el-col :span="12">
               <el-form-item label="ORM框架" prop="dbConfig.orm">
@@ -118,7 +117,7 @@
           </el-form-item>
         </el-row>
         <!-- 文件配置 -->
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-col :span="12">
             <el-form-item label="文件配置" prop="dbType">
               <el-row>
@@ -146,7 +145,7 @@
           <el-col :span="12"></el-col>
         </el-row>
         <!-- 代码配置 -->
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-form-item label="代码配置">
             <el-col :span="4">
               <el-form-item label="markdown" prop="generateMarkdown">
@@ -176,7 +175,7 @@
           </el-form-item>
         </el-row>
         <!-- 父类、接口 -->
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-form-item>
             <el-col :span="6">
               <el-form-item label="父类类名">
@@ -187,7 +186,7 @@
           </el-form-item>
         </el-row>
 
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-form-item>
             <el-col :span="24">
               <el-form-item label="接口类名">
@@ -214,7 +213,7 @@
           </el-form-item>
         </el-row>
 
-        <el-row v-if="dbForm.system.process === 3 || dbForm.system.process === 4">
+        <el-row v-if="dbForm.system.process === 3">
           <el-col :span="24">
             <el-form-item label="数据库表">
               <el-table ref="multipleTable" :data="dbForm.temp.tableInfoList" style="width: 100%" @selection-change="selectTableInfo">
@@ -278,17 +277,17 @@ export default {
           ip: '127.0.0.1',
           port: '3306',
           sid: 'orcl',
-          username: 'root',
-          password: 'root1234',
-          schema: '',
-          generateDir: 'D:\\temp',
-          packageName: '111',
+          username: null,
+          password: null,
+          schema: null,
+          generateDir: null,
+          packageName: null,
           author: '',
-          orm: '',
+          orm: null,
           superClass: '',
           interfaceList: [],
           dbNameList: [],
-          tableKey: '',
+          tableKey: null,
           selectAll: false
         }
       },
@@ -319,13 +318,28 @@ export default {
       }
     }
   },
-  mounted() {
-    this.init();
-  },
   methods: {
-    init() {
+    resetToProcess1() {
       this.dbForm.dbConfig.dbType = 'MYSQL';
       this.dbForm.dbConfig.driverClassName = "com.mysql.cj.jdbc.Driver";
+      this.dbForm.dbConfig.ip = '127.0.0.1';
+      this.dbForm.dbConfig.port = '3306';
+      this.dbForm.dbConfig.sid = 'orcl';
+      this.dbForm.dbConfig.username = '';
+      this.dbForm.dbConfig.password = '';
+      this.dbForm.temp.schemas = [];
+      this.proccess1();
+    },
+    resetToProcess2() {
+      this.dbForm.dbConfig.schema = null;
+      this.dbForm.temp.dbVersion = null;
+      this.proccess1();
+    },
+    resetToProcess3() {
+      this.dbForm.dbConfig.generateDir = '';
+      this.dbForm.dbConfig.packageName = '';
+      this.dbForm.dbConfig.author = null;
+      this.dbForm.dbConfig.orm = null;
       this.dbForm.dbConfig.generateCode = true;
       this.dbForm.dbConfig.overCode = true;
       this.dbForm.dbConfig.overMarkdown = true;
@@ -333,22 +347,14 @@ export default {
       this.dbForm.dbConfig.generateController = false;
       this.dbForm.dbConfig.generateService = false;
       this.dbForm.dbConfig.generateBatchMapper = true;
-      this.dbForm.dbConfig.ip = '127.0.0.1';
-      this.dbForm.dbConfig.port = '3306';
-      this.dbForm.dbConfig.sid = 'orcl';
-      this.dbForm.dbConfig.username = '';
-      this.dbForm.dbConfig.password = '';
-      this.dbForm.dbConfig.schema = '';
-      this.dbForm.dbConfig.generateDir = '';
-      this.dbForm.dbConfig.packageName = '';
-      this.dbForm.dbConfig.author = null;
-      this.dbForm.dbConfig.orm = null;
       this.dbForm.dbConfig.interfaceList = [];
       this.dbForm.dbConfig.superClass = '';
       this.dbForm.dbConfig.dbNameList = [];
       this.dbForm.dbConfig.tableKey = '';
-      this.dbForm.system.btnType = '';
-      this.dbForm.system.btnTxt = '测试';
+      this.dbForm.temp.interfaceName = null;
+      this.dbForm.temp.inputVisible = false;
+      this.dbForm.temp.tableInfoList = [];
+      this.proccess2();
     },
     changeDbType($event) {
       if ($event === 'MYSQL') {
@@ -383,17 +389,16 @@ export default {
             this.$axios.post('/generate/buildTableInfos', this.dbForm.dbConfig)
               .then(res => {
                 this.proccess3();
-                this.dbForm.system.btnType = '';
                 this.dbForm.dbConfig.interfaceList = [];
-                this.dbForm.system.btnTxt = '生成';
                 this.dbForm.temp.tableInfoList = res.tableInfos;
                 this.dbForm.dbConfig.tableKey = res.dataBaseInfoKey;
-                this.dbForm.dbConfig.proccess = 4;
               });
           }
 
           if (this.dbForm.system.process === 3) {
-            this.$axios.post('/generate/process', this.dbForm.dbConfig);
+            this.$axios.post('/generate/process', this.dbForm.dbConfig)
+            .then(res => {
+            });
           }
 
         } else {
@@ -403,30 +408,31 @@ export default {
     },
     resetForm(formName) {
       if (this.dbForm.system.process === 1) {
-        this.init();
+        this.resetToProcess1();
       }
 
       if (this.dbForm.system.process === 2) {
-        this.proccess1();
+        this.resetToProcess2();
       }
 
       if (this.dbForm.system.process === 3) {
-        this.proccess2();
+        this.resetToProcess3();
+      }
+
+      if (this.dbForm.system.process === 4) {
+        this.resetToProcess2();
       }
     },
     proccess1() {
       this.dbForm.system.process = 1;
       this.dbForm.system.btnType = 'primary';
       this.dbForm.system.btnTxt = '测试';
-      this.dbForm.dbConfig.schema = '';
-      this.dbForm.temp.dbVersion = '';
+
     },
     proccess2() {
       this.dbForm.system.process = 2;
       this.dbForm.system.btnType = 'warning';
       this.dbForm.system.btnTxt = '提交';
-      this.dbForm.dbConfig.orm = null;
-      this.dbForm.dbConfig.interfaceList = [];
     },
     proccess3() {
       this.dbForm.system.process = 3;
@@ -456,7 +462,6 @@ export default {
       this.dbForm.temp.interfaceName = '';
     },
     selectTableInfo: function (val) {
-      console.log('a', val);
       let dbNameList = [];
 
       val.map((item) => {
