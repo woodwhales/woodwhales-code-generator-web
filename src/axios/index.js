@@ -69,6 +69,7 @@ instance.interceptors
       Message.error({
         message: res.data.msg
       });
+      return Promise.reject(res.data)
     }
     return res.data.data;
   }, error => {
