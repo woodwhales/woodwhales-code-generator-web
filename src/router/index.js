@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Index from '@/components/Index'
 import CodeGenerator from '@/components/CodeGenerator'
 import Connection from '@/components/Connection'
+import TableDetail from '@/components/TableDetail'
 import axios from '@/axios';
 
 Vue.use(Router);
@@ -32,6 +33,11 @@ export default new Router({
       path: '/codeGenerator',
       name: 'CodeGenerator',
       component: CodeGenerator
+    },
+    {
+      path: '/tableDetail',
+      name: 'TableDetail',
+      component: TableDetail
     }
   ]
 })

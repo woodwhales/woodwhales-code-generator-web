@@ -4,10 +4,14 @@ import {Message, Loading} from 'element-ui';
 let loading;
 
 const instance = axios.create({
-  timeout: 5000,
+  timeout: 60000,
   crossDomain: true,
   withCredentials: true
 });
+
+instance.defaults.withCredentials = true;
+instance.defaults.crossDomain = true;
+instance.defaults.headers.common['Access-Control-Allow-Origin'] = process.env.VUE_APP_Access_Control_Allow_Origin;
 
 function startLoading() {
   loading = Loading.service({
@@ -75,7 +79,6 @@ instance.interceptors
     return Promise.reject(error)
   });
 
-instance.defaults.withCredentials = true;
-instance.defaults.crossDomain = true;
+
 
 export default instance

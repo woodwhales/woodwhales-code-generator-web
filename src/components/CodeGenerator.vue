@@ -226,6 +226,11 @@
                     <span style="margin-left: 10px">{{ scope.row.keys.join(',') }}</span>
                   </template>
                 </el-table-column>
+                <el-table-column label="操作" width="100">
+                  <template slot-scope="scope">
+                    <el-button @click="showDetailTable(scope.row.tableKey)" type="text" size="small">查看</el-button>
+                  </template>
+                </el-table-column>
               </el-table>
             </el-form-item>
           </el-col>
@@ -368,7 +373,6 @@ export default {
       }
     },
     changeOrm($event) {
-      console.log($event);
       if($event === 'MyBatis') {
         this.dbForm.dbConfig.generateBatchMapper = false;
       }
@@ -377,7 +381,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dbForm.system.process === 1) {
-            this.$axios.post('/generate/buildConnection', this.dbForm.dbConfig)
+            this.$axios.post('/api/generate/buildConnection', this.dbForm.dbConfig)
               .then(res => {
                 this.proccess2();
                 this.dbForm.temp.schemas = res.schemas;
@@ -386,7 +390,7 @@ export default {
           }
 
           if (this.dbForm.system.process === 2) {
-            this.$axios.post('/generate/buildTableInfos', this.dbForm.dbConfig)
+            this.$axios.post('/api/generate/buildTableInfos', this.dbForm.dbConfig)
               .then(res => {
                 this.proccess3();
                 this.dbForm.dbConfig.interfaceList = [];
@@ -396,7 +400,7 @@ export default {
           }
 
           if (this.dbForm.system.process === 3) {
-            this.$axios.post('/generate/process', this.dbForm.dbConfig)
+            this.$axios.post('/api/generate/process', this.dbForm.dbConfig)
             .then(res => {
             });
           }
@@ -473,6 +477,14 @@ export default {
       }
 
       this.dbForm.dbConfig.dbNameList = dbNameList;
+    },
+    showDetailTable(tableKey) {
+      this.$router.push({
+        path: '/tableDetail',
+        query: {
+          tableKey: tableKey
+        }
+      })
     }
   }
 }
