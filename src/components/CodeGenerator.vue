@@ -7,7 +7,7 @@
           <el-form-item label="驱动配置" prop="dbType">
             <el-col :span="12">
               <el-form-item label="驱动类型" prop="generateCode">
-                <el-radio-group v-model="dbForm.dbConfig.dbType" @change="changeDbType($event)">
+                <el-radio-group v-model="dbForm.dbConfig.dbType" @change="changeDbType($event)" :disabled="dbForm.system.process !== 1">
                   <el-radio label="MYSQL" border>MYSQL</el-radio>
                   <el-radio label="ORACLE" border>Oracle</el-radio>
                 </el-radio-group>
@@ -26,18 +26,18 @@
             <el-row>
               <el-col :span="6">
                 <el-form-item label="IP地址" prop="dbConfig.ip">
-                  <el-input v-model="dbForm.dbConfig.ip" placeholder="请输入主机名或IP地址"></el-input>
+                  <el-input v-model="dbForm.dbConfig.ip" placeholder="请输入主机名或IP地址" :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item label="端口" prop="dbConfig.port">
                   <el-input-number v-model="dbForm.dbConfig.port" :min="1" :max="25535"
-                                   placeholder="端口号"></el-input-number>
+                                   placeholder="端口号" :disabled="dbForm.system.process !== 1"></el-input-number>
                 </el-form-item>
               </el-col>
               <el-col :span="6" v-if="dbForm.dbConfig.dbType === 'ORACLE'">
                 <el-form-item label="SID" prop="dbConfig.sid">
-                  <el-input v-model="dbForm.dbConfig.sid" placeholder="请输入SID"></el-input>
+                  <el-input v-model="dbForm.dbConfig.sid" placeholder="请输入SID" :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6"></el-col>
@@ -50,12 +50,12 @@
             <el-row>
               <el-col :span="6">
                 <el-form-item label="用户名" prop="dbConfig.username">
-                  <el-input v-model="dbForm.dbConfig.username" placeholder="请输入用户名"></el-input>
+                  <el-input v-model="dbForm.dbConfig.username" placeholder="请输入用户名" :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item label="密码" prop="dbConfig.password">
-                  <el-input v-model="dbForm.dbConfig.password" type="password" placeholder="请输入密码"></el-input>
+                  <el-input v-model="dbForm.dbConfig.password" type="password" placeholder="请输入密码" :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12"></el-col>
@@ -67,8 +67,8 @@
           <el-form-item>
             <el-col :span="6">
               <el-form-item label="schema" prop="dbConfig.schema">
-                <el-select v-model="dbForm.dbConfig.schema" filterable placeholder="请选择">
-                  <el-option v-for="schema in dbForm.temp.schemas" :key="schema" :label="schema" :value="schema">
+                <el-select v-model="dbForm.dbConfig.schema" filterable placeholder="请选择" :disabled="dbForm.system.process === 3">
+                  <el-option v-for="schema in dbForm.temp.schemas" :key="schema" :label="schema" :value="schema" >
                   </el-option>
                 </el-select>
               </el-form-item>
@@ -217,16 +217,16 @@
           <el-col :span="24">
             <el-form-item label="数据库表">
               <el-table ref="multipleTable" :data="dbForm.temp.tableInfoList" style="width: 100%" @selection-change="selectTableInfo">
-                <el-table-column type="selection" width="100"></el-table-column>
-                <el-table-column prop="dbName" label="表名" width="250"></el-table-column>
-                <el-table-column prop="name" label="类名" width="250"></el-table-column>
-                <el-table-column prop="comment" label="注释" width="250"></el-table-column>
-                <el-table-column prop="keys" label="主键" width="250">
+                <el-table-column type="selection"></el-table-column>
+                <el-table-column prop="dbName" label="表名"></el-table-column>
+                <el-table-column prop="name" label="类名"></el-table-column>
+                <el-table-column prop="comment" label="注释"></el-table-column>
+                <el-table-column prop="keys" label="主键">
                   <template slot-scope="scope">
                     <span style="margin-left: 10px">{{ scope.row.keys.join(',') }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="操作" width="100">
+                <el-table-column label="操作">
                   <template slot-scope="scope">
                     <el-button @click="showDetailTable(scope.row.tableKey)" type="text" size="small">查看</el-button>
                   </template>
@@ -239,10 +239,13 @@
         <el-row>
           <el-form-item>
             <el-button type="primary" @click="submitForm('ruleForm')" v-text="dbForm.system.btnTxt"
-                       :type="dbForm.system.btnType"></el-button>
+                       :type="dbForm.system.btnType" :disabled="dbForm.system.process === 3 && dbForm.temp.tableInfoList.length === 0"></el-button>
             <el-button @click="resetForm('ruleForm')" type="info">重置</el-button>
           </el-form-item>
         </el-row>
+
+        <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
+
       </el-form>
     </el-row>
   </div>
