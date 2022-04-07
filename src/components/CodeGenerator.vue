@@ -264,15 +264,15 @@
       <el-form :model="saveConfigForm" label-position="right">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="配置名称" label-width="80px" prop="dbConfigName" required>
-              <el-input v-model="saveConfigForm.dbConfigName" placeholder="请输入配置名称"></el-input>
+            <el-form-item label="配置名称" label-width="80px" prop="configName" required>
+              <el-input v-model="saveConfigForm.configName" placeholder="请输入配置名称"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="配置备注" label-width="80px" prop="dbConfigName">
-              <el-input type="textarea" :rows="3" v-model="saveConfigForm.dbConfigMemo" placeholder="请输入配置备注" resize="none"></el-input>
+            <el-form-item label="配置备注" label-width="80px" prop="configName">
+              <el-input type="textarea" :rows="3" v-model="saveConfigForm.configMemo" placeholder="请输入配置备注" resize="none"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -332,15 +332,15 @@
       <el-form :model="editConfigForm" label-position="right">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="配置名称" label-width="80px" prop="dbConfigName" required>
-              <el-input v-model="editConfigForm.dbConfigName" placeholder="请输入配置名称"></el-input>
+            <el-form-item label="配置名称" label-width="80px" prop="configName" required>
+              <el-input v-model="editConfigForm.configName" placeholder="请输入配置名称"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="配置备注" label-width="80px" prop="dbConfigName">
-              <el-input type="textarea" :rows="3" v-model="editConfigForm.dbConfigMemo" placeholder="请输入配置备注" resize="none"></el-input>
+            <el-form-item label="配置备注" label-width="80px" prop="configMemo">
+              <el-input type="textarea" :rows="3" v-model="editConfigForm.configMemo" placeholder="请输入配置备注" resize="none"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -390,7 +390,7 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" size="small">更 新</el-button>
+        <el-button type="primary" @click="updateConfigFun" size="small">更 新</el-button>
         <el-button @click="dbForm.temp.editConfigFormVisible = false" size="small">取 消</el-button>
       </div>
     </el-dialog>
@@ -418,7 +418,7 @@
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="loadConfigFun" size="small">加 载</el-button>
+        <el-button type="primary" @click="loadConfigFun" size="small" :disabled="loadConfig.configTableList.length === 0">加 载</el-button>
         <el-button @click="dbForm.temp.loadConfigFormVisible = false" size="small">取 消</el-button>
       </div>
     </el-dialog>
@@ -442,8 +442,8 @@ export default {
         sid: ''
       },
       saveConfigForm: {
-        dbConfigName: null,
-        dbConfigMemo: null,
+        configName: null,
+        configMemo: null,
         baseDbConfig: {
           dbType: null,
           driverClassName: null,
@@ -467,8 +467,8 @@ export default {
       },
       editConfigForm: {
         configCode: null,
-        dbConfigName: null,
-        dbConfigMemo: null,
+        configName: null,
+        configMemo: null,
         baseDbConfig: {
           dbType: null,
           driverClassName: null,
@@ -725,7 +725,7 @@ export default {
       })
     },
     saveConfigDialogOpen() {
-      this.saveConfigForm.dbConfigName = this.dbForm.dbConfig.dbType + "_" + this.dbForm.dbConfig.ip + "_" + this.dbForm.dbConfig.port;
+      this.saveConfigForm.configName = this.dbForm.dbConfig.dbType + "_" + this.dbForm.dbConfig.ip + "_" + this.dbForm.dbConfig.port + "_" + this.dbForm.dbConfig.username;
       this.saveConfigForm.baseDbConfig.ip = this.dbForm.dbConfig.ip;
       this.saveConfigForm.baseDbConfig.port = this.dbForm.dbConfig.port;
       this.saveConfigForm.baseDbConfig.username = this.dbForm.dbConfig.username;
@@ -783,14 +783,14 @@ export default {
     deleteConfig(configCode) {
       this.$axios.post('/api/databaseConfig/delete', { configCode: configCode })
         .then(res => {
+          this.loadConfigDialogOpen();
         });
-      this.loadConfigDialogOpen();
     },
     editConfig(configCode) {
       this.$axios.post('/api/databaseConfig/get', { configCode: configCode })
         .then(res => {
           this.editConfigForm.configCode = res.configCode;
-          this.editConfigForm.dbConfigName = res.configName;
+          this.editConfigForm.configName = res.configName;
           this.editConfigForm.configMemo = res.configMemo;
           this.editConfigForm.baseDbConfig.ip = res.configIp;
           this.editConfigForm.baseDbConfig.port = res.configPort;
@@ -799,6 +799,14 @@ export default {
           this.editConfigForm.baseDbConfig.sid = res.configSid;
           this.editConfigForm.baseDbConfig.dbType = res.databaseType;
           this.editConfigForm.baseDbConfig.driverClassName = res.databaseDriverClassName;
+          this.dbForm.temp.editConfigFormVisible = true;
+        });
+    },
+    updateConfigFun() {
+      this.$axios.post('/api/databaseConfig/update', this.editConfigForm)
+        .then(res => {
+          this.dbForm.temp.editConfigFormVisible = false;
+          this.dbForm.temp.loadConfigFormVisible = true;
         });
     }
   }
