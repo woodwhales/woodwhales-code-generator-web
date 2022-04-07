@@ -260,7 +260,8 @@
     </el-row>
 
     <!-- 保存配置 -->
-    <el-dialog title="保存配置" :visible.sync="dbForm.temp.saveConfigFormVisible" @open="saveConfigDialogOpen" center width="80%">
+    <el-dialog title="保存配置" :visible.sync="dbForm.temp.saveConfigFormVisible" @open="saveConfigDialogOpen" center
+               width="80%">
       <el-form :model="saveConfigForm" label-position="right">
         <el-row>
           <el-col :span="24">
@@ -272,7 +273,8 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="配置备注" label-width="80px" prop="configName">
-              <el-input type="textarea" :rows="3" v-model="saveConfigForm.configMemo" placeholder="请输入配置备注" resize="none"></el-input>
+              <el-input type="textarea" :rows="3" v-model="saveConfigForm.configMemo" placeholder="请输入配置备注"
+                        resize="none"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -328,7 +330,8 @@
     </el-dialog>
 
     <!-- 更新配置 -->
-    <el-dialog title="更新配置" :visible.sync="dbForm.temp.editConfigFormVisible" @open="saveConfigDialogOpen" center width="80%">
+    <el-dialog title="更新配置" :visible.sync="dbForm.temp.editConfigFormVisible" @open="saveConfigDialogOpen" center
+               width="80%">
       <el-form :model="editConfigForm" label-position="right">
         <el-row>
           <el-col :span="24">
@@ -340,7 +343,8 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="配置备注" label-width="80px" prop="configMemo">
-              <el-input type="textarea" :rows="3" v-model="editConfigForm.configMemo" placeholder="请输入配置备注" resize="none"></el-input>
+              <el-input type="textarea" :rows="3" v-model="editConfigForm.configMemo" placeholder="请输入配置备注"
+                        resize="none"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -396,7 +400,8 @@
     </el-dialog>
 
     <!-- 加载配置 -->
-    <el-dialog title="加载配置" :visible.sync="dbForm.temp.loadConfigFormVisible" @open="loadConfigDialogOpen" center width="80%">
+    <el-dialog title="加载配置" :visible.sync="dbForm.temp.loadConfigFormVisible" @open="loadConfigDialogOpen" center
+               width="80%">
       <el-table
         ref="singleTable"
         :data="loadConfig.configTableList"
@@ -417,8 +422,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        layout="prev, pager, next"
+        :total="loadConfigSys.total"
+        :page-size="loadConfigSys.pageSize"
+        @current-change="handleCurrentChange"
+        :hide-on-single-page="true">
+      </el-pagination>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="loadConfigFun" size="small" :disabled="loadConfig.configTableList.length === 0">加 载</el-button>
+        <el-button type="primary" @click="loadConfigFun" size="small"
+                   :disabled="loadConfig.configTableList.length === 0">加 载
+        </el-button>
         <el-button @click="dbForm.temp.loadConfigFormVisible = false" size="small">取 消</el-button>
       </div>
     </el-dialog>
@@ -430,6 +444,11 @@ export default {
   name: "CodeGenerator",
   data() {
     return {
+      loadConfigSys: {
+        total: null,
+        currentPage: 1,
+        pageSize: 5
+      },
       loadConfig: {
         configTableList: [],
         configCode: '',
@@ -740,15 +759,23 @@ export default {
           this.dbForm.temp.saveConfigFormVisible = false;
         });
     },
+    queryConfig() {
+      this.$axios.get('/api/databaseConfig/page', {
+        params: {
+          page: this.loadConfigSys.currentPage,
+          limit: this.loadConfigSys.pageSize
+        }
+      }).then(res => {
+        this.loadConfigSys.total = res.count;
+        this.loadConfig.configTableList = res.list;
+      });
+    },
     loadConfigDialogOpen() {
       this.initLoadConfig();
-      this.$axios.get('/api/databaseConfig/page?page=1&limit=10')
-        .then(res => {
-          this.loadConfig.configTableList = res;
-        });
+      this.queryConfig();
     },
     selectLoadConfig(row) {
-      if(row) {
+      if (row) {
         this.loadConfig.configCode = row.configCode;
         this.loadConfig.driverClassName = row.databaseDriverClassName;
         this.loadConfig.databaseType = row.databaseType;
@@ -781,13 +808,13 @@ export default {
       this.loadConfig.sid = null;
     },
     deleteConfig(configCode) {
-      this.$axios.post('/api/databaseConfig/delete', { configCode: configCode })
+      this.$axios.post('/api/databaseConfig/delete', {configCode: configCode})
         .then(res => {
           this.loadConfigDialogOpen();
         });
     },
     editConfig(configCode) {
-      this.$axios.post('/api/databaseConfig/get', { configCode: configCode })
+      this.$axios.post('/api/databaseConfig/get', {configCode: configCode})
         .then(res => {
           this.editConfigForm.configCode = res.configCode;
           this.editConfigForm.configName = res.configName;
@@ -808,6 +835,10 @@ export default {
           this.dbForm.temp.editConfigFormVisible = false;
           this.dbForm.temp.loadConfigFormVisible = true;
         });
+    },
+    handleCurrentChange(current) {
+      this.loadConfigSys.currentPage = current;
+      this.queryConfig();
     }
   }
 }
