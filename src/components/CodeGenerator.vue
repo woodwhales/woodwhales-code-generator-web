@@ -234,14 +234,14 @@
                 <el-table-column prop="name" label="类名"></el-table-column>
                 <el-table-column prop="comment" label="注释"></el-table-column>
                 <el-table-column prop="keys" label="主键">
-                  <template slot-scope="scope">
+                  <slot-scope slot-scope="scope">
                     <span style="margin-left: 10px">{{ scope.row.keys.join(',') }}</span>
-                  </template>
+                  </slot-scope>
                 </el-table-column>
                 <el-table-column label="操作">
-                  <template slot-scope="scope">
+                  <slot-scope slot-scope="scope">
                     <el-button @click="showDetailTable(scope.row.tableKey)" type="text" size="small">查看</el-button>
-                  </template>
+                  </slot-scope>
                 </el-table-column>
               </el-table>
             </el-form-item>
@@ -416,12 +416,12 @@
         <el-table-column property="configMemo" label="配置描述"></el-table-column>
         <el-table-column property="gmtModified" label="更新时间"></el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope">
+          <slot-scope slot-scope="scope">
             <el-button @click="editConfig(scope.row.configCode)" type="warn" size="mini">编辑</el-button>
             <el-popconfirm title="确认删除？" @confirm="deleteConfig(scope.row.configCode)">
               <el-button type="danger" size="mini" slot="reference">删除</el-button>
             </el-popconfirm>
-          </template>
+          </slot-scope>
         </el-table-column>
       </el-table>
       <el-pagination

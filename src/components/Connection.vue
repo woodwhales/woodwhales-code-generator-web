@@ -14,12 +14,12 @@
         <el-table-column property="configMemo" label="配置描述"></el-table-column>
         <el-table-column property="gmtModified" label="更新时间"></el-table-column>
         <el-table-column label="操作">
-          <template slot-scope="scope">
+          <slot-scope slot-scope="scope">
             <el-button @click="editConfig(scope.row.configCode)" type="warn" size="mini">编辑</el-button>
             <el-popconfirm title="确认删除？" @confirm="deleteConfig(scope.row.configCode)">
               <el-button type="danger" slot="reference" size="mini">删除</el-button>
             </el-popconfirm>
-          </template>
+          </slot-scope>
         </el-table-column>
       </el-table>
       <el-pagination
