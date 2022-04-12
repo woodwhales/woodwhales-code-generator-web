@@ -61,10 +61,7 @@ instance.interceptors
   .use(res => {
     tryHideFullScreenLoading();
     if (res.data.code === 0) {
-      Message.success({
-        message: res.data.msg,
-        duration: 1000
-      });
+
     } else {
       Message.error({
         message: res.data.msg

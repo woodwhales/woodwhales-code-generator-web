@@ -839,6 +839,7 @@ export default {
         .then(res => {
           this.dbForm.temp.editConfigFormVisible = false;
           this.dbForm.temp.loadConfigFormVisible = true;
+          this.queryConfig();
         });
     },
     handleCurrentChange(current) {
