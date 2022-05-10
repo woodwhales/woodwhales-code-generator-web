@@ -640,7 +640,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.dbForm.system.process === 1) {
-            this.$axios.post('/api/generate/buildConnection', this.dbForm.dbConfig)
+            this.$axios.post('/generate/buildConnection', this.dbForm.dbConfig)
               .then(res => {
                 this.proccess2();
                 this.dbForm.temp.schemas = res.schemas;
@@ -649,7 +649,7 @@ export default {
           }
 
           if (this.dbForm.system.process === 2) {
-            this.$axios.post('/api/generate/buildTableInfos', this.dbForm.dbConfig)
+            this.$axios.post('/generate/buildTableInfos', this.dbForm.dbConfig)
               .then(res => {
                 this.proccess3();
                 this.dbForm.dbConfig.interfaceList = [];
@@ -659,7 +659,7 @@ export default {
           }
 
           if (this.dbForm.system.process === 3) {
-            this.$axios.post('/api/generate/process', this.dbForm.dbConfig)
+            this.$axios.post('/generate/process', this.dbForm.dbConfig)
               .then(res => {
               });
           }
@@ -756,13 +756,13 @@ export default {
       this.saveConfigForm.baseDbConfig.driverClassName = this.dbForm.dbConfig.driverClassName;
     },
     saveConfigFun() {
-      this.$axios.post('/api/databaseConfig/create', this.saveConfigForm)
+      this.$axios.post('/databaseConfig/create', this.saveConfigForm)
         .then(res => {
           this.dbForm.temp.saveConfigFormVisible = false;
         });
     },
     queryConfig() {
-      this.$axios.get('/api/databaseConfig/page', {
+      this.$axios.get('/databaseConfig/page', {
         params: {
           page: this.loadConfigSys.currentPage,
           limit: this.loadConfigSys.pageSize
@@ -810,7 +810,7 @@ export default {
       this.loadConfig.sid = null;
     },
     deleteConfig(configCode) {
-      this.$axios.post('/api/databaseConfig/delete', {configCode: configCode})
+      this.$axios.post('/databaseConfig/delete', {configCode: configCode})
         .then(res => {
           let totalPage = Math.ceil((this.loadConfigSys.total - 1) / this.loadConfigSys.pageSize);
           let currentPage = this.loadConfigSys.currentPage > totalPage ? totalPage : this.loadConfigSys.currentPage;
@@ -819,7 +819,7 @@ export default {
         });
     },
     editConfig(configCode) {
-      this.$axios.post('/api/databaseConfig/get', {configCode: configCode})
+      this.$axios.post('/databaseConfig/get', {configCode: configCode})
         .then(res => {
           this.editConfigForm.configCode = res.configCode;
           this.editConfigForm.configName = res.configName;
@@ -835,7 +835,7 @@ export default {
         });
     },
     updateConfigFun() {
-      this.$axios.post('/api/databaseConfig/update', this.editConfigForm)
+      this.$axios.post('/databaseConfig/update', this.editConfigForm)
         .then(res => {
           this.dbForm.temp.editConfigFormVisible = false;
           this.dbForm.temp.loadConfigFormVisible = true;

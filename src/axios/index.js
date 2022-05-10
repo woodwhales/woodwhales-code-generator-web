@@ -3,6 +3,16 @@ import {Message, Loading} from 'element-ui';
 
 let loading;
 
+let root = getRoot();
+
+function getRoot() {
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.API_ROOT;
+  } else {
+    return '';
+  }
+}
+
 const instance = axios.create({
   timeout: 864000,
   crossDomain: true,
@@ -46,6 +56,7 @@ export function tryHideFullScreenLoading() {
 instance.interceptors
   .request
   .use(config => {
+    config.url = root + config.url;
     showFullScreenLoading();
     return config
   }, error => {

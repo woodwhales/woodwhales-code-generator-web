@@ -50,7 +50,7 @@ export default {
   },
   methods: {
     init() {
-      this.$axios.post('/api/generate/getTableInfo', this.dbForm.detail)
+      this.$axios.post('/generate/getTableInfo', this.dbForm.detail)
       .then(res => {
         this.dbForm.temp.createTableSql = res.createTableSql;
         this.dbForm.temp.createTableSqlRow = res.createTableSql.split("\n").length;
