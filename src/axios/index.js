@@ -4,7 +4,7 @@ import {Message, Loading} from 'element-ui';
 let loading;
 
 const instance = axios.create({
-  timeout: 60000,
+  timeout: 864000,
   crossDomain: true,
   withCredentials: true
 });
