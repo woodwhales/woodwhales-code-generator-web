@@ -16,7 +16,7 @@
             </el-col>
             <el-col :span="12" v-show="false">
               <el-form-item label="驱动类名" prop="driverClassName">
-                <el-input v-model="dbForm.dbConfig.driverClassName" :disabled="true"></el-input>
+                <el-input v-model.trim="dbForm.dbConfig.driverClassName" :disabled="true"></el-input>
               </el-form-item>
             </el-col>
           </el-form-item>
@@ -27,7 +27,7 @@
             <el-row>
               <el-col :span="6">
                 <el-form-item label="IP地址" prop="dbConfig.ip">
-                  <el-input v-model="dbForm.dbConfig.ip" placeholder="请输入主机名或IP地址"
+                  <el-input v-model.trim="dbForm.dbConfig.ip" placeholder="请输入主机名或IP地址"
                             :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
@@ -39,7 +39,7 @@
               </el-col>
               <el-col :span="6" v-if="dbForm.dbConfig.dbType === 'ORACLE'">
                 <el-form-item label="SID" prop="dbConfig.sid">
-                  <el-input v-model="dbForm.dbConfig.sid" placeholder="请输入SID"
+                  <el-input v-model.trim="dbForm.dbConfig.sid" placeholder="请输入SID"
                             :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
@@ -53,13 +53,13 @@
             <el-row>
               <el-col :span="6">
                 <el-form-item label="用户名" prop="dbConfig.username">
-                  <el-input v-model="dbForm.dbConfig.username" placeholder="请输入用户名"
+                  <el-input v-model.trim="dbForm.dbConfig.username" placeholder="请输入用户名"
                             :disabled="dbForm.system.process !== 1"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item label="密码" prop="dbConfig.password">
-                  <el-input v-model="dbForm.dbConfig.password" type="password" placeholder="请输入密码"
+                  <el-input v-model.trim="dbForm.dbConfig.password" type="password" placeholder="请输入密码"
                             :disabled="dbForm.system.process !== 1"></el-input>
                   <el-button type="success" @click="dbForm.temp.saveConfigFormVisible = true" size="mini" plain
                              v-if="dbForm.system.process !== 1">保存配置
@@ -99,17 +99,17 @@
           <el-form-item label="生成配置">
             <el-col :span="6">
               <el-form-item label="项目路径" prop="dbConfig.generateDir">
-                <el-input v-model="dbForm.dbConfig.generateDir" placeholder="请指定要生成的项目路径"></el-input>
+                <el-input v-model.trim="dbForm.dbConfig.generateDir" placeholder="请指定要生成的项目路径"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="项目包名" prop="dbConfig.packageName">
-                <el-input v-model="dbForm.dbConfig.packageName" placeholder="请输入要生成的项目包名"></el-input>
+                <el-input v-model.trim="dbForm.dbConfig.packageName" placeholder="请输入要生成的项目包名"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="项目作者" prop="dbConfig.author">
-                <el-input v-model="dbForm.dbConfig.author" placeholder="请输入项目作者"></el-input>
+                <el-input v-model.trim="dbForm.dbConfig.author" placeholder="请输入项目作者"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6"></el-col>
@@ -190,7 +190,7 @@
           <el-form-item>
             <el-col :span="6">
               <el-form-item label="父类类名">
-                <el-input v-model="dbForm.dbConfig.superClass" placeholder="请指定要生成的目录路径"></el-input>
+                <el-input v-model.trim="dbForm.dbConfig.superClass" placeholder="请指定要生成的目录路径"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="18"></el-col>
@@ -212,7 +212,7 @@
                 <el-input
                   class="input-new-tag"
                   v-if="dbForm.temp.inputVisible"
-                  v-model="dbForm.temp.interfaceName"
+                  v-model.trim="dbForm.temp.interfaceName"
                   ref="saveTagInput"
                   @keyup.enter.native="handleInputConfirm"
                   @blur="handleInputConfirm"
