@@ -147,7 +147,7 @@
               </el-form-item>
 
               <!-- controller service  batchMapper -->
-              <el-form-item label="文件配置">
+              <el-form-item label="业务代码">
                 <el-col :span="4">
                   <el-form-item label="controller" prop="generateConfig.javaCodeConfig.generateController">
                     <el-switch v-model="dbForm.generateConfig.javaCodeConfig.generateController" active-color="#13ce66" inactive-color="#ff4949">
@@ -170,7 +170,7 @@
             </el-form-item>
 
               <!-- 父类、接口 -->
-              <el-form-item label="接口配置">
+              <el-form-item label="父类类名">
                 <el-col :span="6">
                   <el-form-item>
                     <el-input v-model.trim="dbForm.generateConfig.javaCodeConfig.superClass" size="small" placeholder="请指定要生成的目录路径"></el-input>
@@ -212,11 +212,11 @@
         <el-row v-if="dbForm.system.process === 3 && dbForm.generateConfig.markdownConfig.generateMarkdown">
           <el-form-item label="mardown配置">
             <el-row>
-              <el-form-item label="生成markdown" prop="overMarkdown">
+              <el-form-item label="生成markdown" prop="generateConfig.markdownConfig.overMarkdown">
                 <el-switch v-model="dbForm.generateConfig.markdownConfig.overMarkdown" active-color="#13ce66"
                            inactive-color="#ff4949"></el-switch>
               </el-form-item>
-              <el-form-item label="文档路径" prop="markdownDir">
+              <el-form-item label="文档路径" prop="generateConfig.markdownConfig.markdownDir">
                 <el-input v-model.trim="dbForm.generateConfig.markdownConfig.markdownDir" placeholder="请指定文档路径"></el-input>
               </el-form-item>
             </el-row>
@@ -236,14 +236,14 @@
                 <el-table-column prop="name" label="类名"></el-table-column>
                 <el-table-column prop="comment" label="注释"></el-table-column>
                 <el-table-column prop="keys" label="主键">
-                  <slot-scope slot-scope="scope">
+                  <slot-scope  slot-scope="scope">
                     <span style="margin-left: 10px">{{ scope.row.keys.join(',') }}</span>
                   </slot-scope>
                 </el-table-column>
                 <el-table-column label="操作">
-                  <slot-scope slot-scope="scope">
+                  <template slot-scope="scope">
                     <el-button @click="showDetailTable(scope.row.tableKey)" type="text" size="small">查看</el-button>
-                  </slot-scope>
+                  </template>
                 </el-table-column>
               </el-table>
             </el-form-item>
@@ -557,7 +557,7 @@ export default {
             superClass: null,
             interfaceList: [],
             ormConfig: {
-              orm: null,
+              orm: '',
               generateBatchMapper: false
             }
           },
@@ -581,16 +581,27 @@ export default {
           ],
           schema: [
             {required: true, message: '请选择 schema', trigger: 'blur'}
-          ],
-          generateDir: [
-            {required: true, message: '请输入项目目录', trigger: 'blur'}
-          ],
-          packageName: [
-            {required: true, message: '请输入项目包名', trigger: 'blur'}
-          ],
-          orm: [
-            {required: true, message: '请选择 orm 框架', trigger: 'blur'}
           ]
+        },
+        generateConfig: {
+          javaCodeConfig: {
+            generateDir: [
+              {required: true, message: '请指定项目路径', trigger: 'blur'}
+            ],
+            packageName: [
+              {required: true, message: '请输入项目包名', trigger: 'blur'}
+            ],
+            ormConfig: {
+              orm: [
+                {required: true, message: '请选择 orm 框架', trigger: 'blur'}
+              ]
+            }
+          },
+          markdownConfig: {
+            markdownDir: [
+              {required: true, message: '请指定文档路径', trigger: 'blur'}
+            ]
+          }
         }
       }
     }
@@ -629,8 +640,8 @@ export default {
       javaCodeConfig.generateService = false;
       javaCodeConfig.superClass = null;
       javaCodeConfig.interfaceList = [];
-      let ormConfig = generateConfig.ormConfig;
-      ormConfig.orm = null;
+      let ormConfig = javaCodeConfig.ormConfig;
+      ormConfig.orm = '';
       ormConfig.generateBatchMapper = false;
 
       let markdownConfig = generateConfig.markdownConfig;
@@ -688,7 +699,6 @@ export default {
             requestBody.dbTableConfig = this.dbForm.generateConfig.dbTableConfig;
             requestBody.javaCodeConfig = this.dbForm.generateConfig.javaCodeConfig;
             requestBody.markdownConfig = this.dbForm.generateConfig.markdownConfig;
-
             this.$axios.post('/generate/process', requestBody)
               .then(res => {
               });
@@ -744,9 +754,9 @@ export default {
     handleInputConfirm() {
       let inputValue = this.dbForm.temp.interfaceName;
       if (inputValue !== '') {
-        let set = new Set(this.generateConfig.javaCodeConfig.interfaceList);
+        let set = new Set(this.dbForm.generateConfig.javaCodeConfig.interfaceList);
         if (!set.has(inputValue)) {
-          this.generateConfig.javaCodeConfig.interfaceList.push(inputValue);
+          this.dbForm.generateConfig.javaCodeConfig.interfaceList.push(inputValue);
         } else {
           this.$message.warning('重复添加接口类名');
         }
@@ -762,10 +772,10 @@ export default {
       });
 
       if (val.length > 0 && val.length === this.dbForm.temp.tableInfoList.length) {
-        this.dbForm.dbTableConfig.selectAll = true
+        this.dbForm.generateConfig.dbTableConfig.selectAll = true
       }
 
-      this.dbForm.dbTableConfig.dbNameList = dbNameList;
+      this.dbForm.generateConfig.dbTableConfig.dbNameList = dbNameList;
     },
     showDetailTable(tableKey) {
       this.$router.push({
