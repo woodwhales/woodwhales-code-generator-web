@@ -104,7 +104,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="4">
-                <el-form-item label="生成markdown" prop="generateConfig.markdownConfig.generateMarkdown">
+                <el-form-item label="生成文档" prop="generateConfig.markdownConfig.generateMarkdown">
                   <el-switch v-model="dbForm.generateConfig.markdownConfig.generateMarkdown" active-color="#13ce66"
                              inactive-color="#ff4949"></el-switch>
                 </el-form-item>
@@ -116,11 +116,20 @@
         <el-row v-if="dbForm.system.process === 3 && dbForm.generateConfig.javaCodeConfig.generateCode">
           <el-form-item label="代码配置">
             <el-row>
+              <!-- 基础配置-覆盖代码 -->
+              <el-form-item>
+                <el-col :span="6">
+                  <el-form-item label="覆盖代码" prop="generateConfig.javaCodeConfig.overCode">
+                    <el-switch v-model="dbForm.generateConfig.javaCodeConfig.overCode" active-color="#13ce66" inactive-color="#ff4949">
+                    </el-switch>
+                  </el-form-item>
+                </el-col>
+              </el-form-item>
               <!-- 基础配置 -->
               <el-form-item>
                   <el-col :span="6">
                     <el-form-item label="项目路径" prop="generateConfig.javaCodeConfig.generateDir">
-                      <el-input v-model.trim="dbForm.generateConfig.javaCodeConfig.generateDir" placeholder="请指定项目路径" size="small"></el-input>
+                      <el-input v-model.trim="dbForm.generateConfig.javaCodeConfig.generateDir" placeholder="请指定项目路径" size="small" @input="editGenerateDirInput"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
@@ -208,18 +217,27 @@
           </el-form-item>
         </el-row>
 
-        <!-- mardown配置 -->
+        <!-- 文档配置 -->
         <el-row v-if="dbForm.system.process === 3 && dbForm.generateConfig.markdownConfig.generateMarkdown">
-          <el-form-item label="mardown配置">
-            <el-row>
-              <el-form-item label="生成markdown" prop="generateConfig.markdownConfig.overMarkdown">
+          <el-form-item label="文档配置">
+              <el-form-item label="覆盖文档" prop="generateConfig.markdownConfig.overMarkdown">
                 <el-switch v-model="dbForm.generateConfig.markdownConfig.overMarkdown" active-color="#13ce66"
                            inactive-color="#ff4949"></el-switch>
               </el-form-item>
-              <el-form-item label="文档路径" prop="generateConfig.markdownConfig.markdownDir">
-                <el-input v-model.trim="dbForm.generateConfig.markdownConfig.markdownDir" placeholder="请指定文档路径"></el-input>
+              <el-form-item>
+                  <el-col :span="6">
+                    <el-form-item label="文档路径" prop="generateConfig.markdownConfig.markdownDir">
+                      <el-input v-model.trim="dbForm.generateConfig.markdownConfig.markdownDir" :disabled="dbForm.temp.useJavaCodePath" placeholder="请指定文档路径"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                    <el-form-item label="与代码路径一致" prop="temp.useJavaCodePath" >
+                      <el-checkbox v-model="dbForm.temp.useJavaCodePath" @change="useJavaCodePathChange"></el-checkbox>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                  </el-col>
               </el-form-item>
-            </el-row>
           </el-form-item>
         </el-row>
 
@@ -236,9 +254,9 @@
                 <el-table-column prop="name" label="类名"></el-table-column>
                 <el-table-column prop="comment" label="注释"></el-table-column>
                 <el-table-column prop="keys" label="主键">
-                  <slot-scope  slot-scope="scope">
+                  <template  slot-scope="scope">
                     <span style="margin-left: 10px">{{ scope.row.keys.join(',') }}</span>
-                  </slot-scope>
+                  </template>
                 </el-table-column>
                 <el-table-column label="操作">
                   <template slot-scope="scope">
@@ -419,12 +437,12 @@
         <el-table-column property="configMemo" label="配置描述"></el-table-column>
         <el-table-column property="gmtModified" label="更新时间"></el-table-column>
         <el-table-column label="操作">
-          <slot-scope slot-scope="scope">
+          <template slot-scope="scope">
             <el-button @click="editConfig(scope.row.configCode)" type="warn" size="mini">编辑</el-button>
             <el-popconfirm title="确认删除？" @confirm="deleteConfig(scope.row.configCode)">
               <el-button type="danger" size="mini" slot="reference">删除</el-button>
             </el-popconfirm>
-          </slot-scope>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -528,7 +546,8 @@ export default {
           tableInfoList: [],
           saveConfigFormVisible: false,
           loadConfigFormVisible: false,
-          editConfigFormVisible: false
+          editConfigFormVisible: false,
+          useJavaCodePath: true
         },
         dbConfig: {
           dbType: 'MYSQL',
@@ -653,6 +672,7 @@ export default {
       this.dbForm.temp.inputVisible = false;
       this.dbForm.temp.tableInfoList = [];
       this.dbForm.dbConfig.tableKey = '';
+      this.dbForm.temp.useJavaCodePath = true;
       this.proccess2();
     },
     changeDbType($event) {
@@ -885,6 +905,19 @@ export default {
     handleCurrentChange(current) {
       this.loadConfigSys.currentPage = current;
       this.queryConfig();
+    },
+    useJavaCodePathChange(val) {
+      this.dbForm.temp.useJavaCodePath = val;
+      if(val) {
+        this.dbForm.generateConfig.markdownConfig.markdownDir = this.dbForm.generateConfig.javaCodeConfig.generateDir;
+      } else {
+        this.dbForm.generateConfig.markdownConfig.markdownDir = null;
+      }
+    },
+    editGenerateDirInput(val) {
+      if(this.dbForm.temp.useJavaCodePath) {
+        this.dbForm.generateConfig.markdownConfig.markdownDir = val;
+      }
     }
   }
 }
