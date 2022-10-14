@@ -44,13 +44,40 @@
             <el-col :span="18"><el-input type="textarea" v-model="genTemplateForm.freemarkerTemplate" :rows="6"></el-input></el-col>
             <el-col :span="6"></el-col>
           </el-row>
-
         </el-form-item>
         <el-form-item label="k-v键值对">
           <el-row :gutter="24">
             <el-col :span="6"><el-input v-model="temp.key"></el-input></el-col>
             <el-col :span="6"><el-input v-model="temp.value"></el-input></el-col>
-            <el-col :span="6"><el-button type="success" size="mini" icon="el-icon-circle-plus-outline" @click="addCustomerKey"></el-button></el-col>
+            <el-col :span="6"><el-button type="success" size="mini" icon="el-icon-circle-plus-outline" @click="addCustomerKey"></el-button>
+              <el-popover
+                placement="right"
+                title="模板默认关键词"
+                width="400"
+                trigger="manual"
+                v-model="temp.showHelp">
+                <el-row>
+                  <el-link type="primary" href="http://freemarker.foofun.cn/toc.html" target="_blank" :underline="false">FreeMarker 中文官方参考手册</el-link>
+                </el-row>
+                <el-table :data="temp.sysKeyList">
+                  <el-table-column
+                    prop="key"
+                    label="关键词"
+                    width="150px">
+                  </el-table-column>
+                  <el-table-column
+                    prop="type"
+                    label="数据类型"
+                    width="80px">
+                  </el-table-column>
+                  <el-table-column
+                    prop="desc"
+                    label="描述">
+                  </el-table-column>
+                </el-table>
+                <el-button size="mini" type="info" icon="el-icon-setting" slot="reference" @click="showHelp">帮助文档</el-button>
+              </el-popover>
+            </el-col>
             <el-col :span="6">&nbsp;</el-col>
           </el-row>
           <el-row :gutter="24" v-show="temp.customKeyList.length > 0">
@@ -84,6 +111,16 @@
         </el-form-item>
       </el-form>
     </el-row>
+    <el-row v-show="temp.template !== '' && temp.template != null && temp.template !== undefined">
+      <el-form>
+        <el-form-item label-width="120px">
+          <el-row :gutter="24">
+            <el-col :span="18"><el-input type="textarea" v-model="temp.template" :rows="6"></el-input></el-col>
+            <el-col :span="6"></el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
+    </el-row>
   </div>
 </template>
 
@@ -99,9 +136,68 @@ export default {
         customKeyValueMap: null
       },
       temp: {
+        showHelp: false,
+        template: null,
         key: null,
         value: null,
-        customKeyList: []
+        customKeyList: [],
+        sysKeyList: [
+          {
+            key: "columns",
+            type: 'List',
+            desc: "库表字段名集合"
+          },
+          {
+            key: " -> dbName",
+            type: 'String',
+            desc: "数据库名"
+          },
+          {
+            key: " -> name",
+            type: 'String',
+            desc: "格式化的库表字段名"
+          },
+          {
+            key: " -> dbType",
+            type: 'String',
+            desc: "库表字段类型"
+          },
+          {
+            key: " -> type",
+            type: 'String',
+            desc: "库表字段类型"
+          },
+          {
+            key: " -> comment",
+            type: 'String',
+            desc: "库表字段注释"
+          },
+          {
+            key: " -> columnSize",
+            type: 'String',
+            desc: "库表字段大小"
+          },
+          {
+            key: " -> nullAble",
+            type: 'boolean',
+            desc: "库表字段是否允许为NULL"
+          },
+          {
+            key: " -> nullableString",
+            type: 'boolean',
+            desc: "nullAble 的字符串形式"
+          },
+          {
+            key: " -> defaultValue",
+            type: 'object',
+            desc: "默认值"
+          },
+          {
+            key: " -> primaryKey",
+            type: 'boolean',
+            desc: "是否为主键"
+          }
+        ]
       },
       dbForm: {
         temp: {
@@ -126,9 +222,11 @@ export default {
           this.dbForm.temp.createTableSqlRow = res.createTableSql.split("\n").length;
           this.dbForm.temp.columns = res.columns;
         });
+      this.temp.showHelp = false;
       this.temp.key = null;
       this.temp.value = null;
       this.temp.customKeyList = [];
+      this.temp.template = null;
       this.genTemplateForm.customKeyValueMap = null;
       this.genTemplateForm.columnNameList = [];
       this.genTemplateForm.freemarkerTemplate = null;
@@ -154,8 +252,7 @@ export default {
         return;
       }
       if(this.genTemplateForm.freemarkerTemplate === ""
-          || this.genTemplateForm.freemarkerTemplate == null
-          || this.genTemplateForm.freemarkerTemplate == undefined) {
+        || this.genTemplateForm.freemarkerTemplate == null) {
         const h = this.$createElement;
         this.$notify({
           message: h('i', { style: 'color: red'}, '请填写模板')
@@ -164,22 +261,24 @@ export default {
       }
       this.$axios.post('/generate/template', this.genTemplateForm)
         .then(res => {
-          // TODO 展示出模板即可
-          console.log(res)
+          this.temp.template = res;
         });
+    },
+    showHelp() {
+      this.temp.showHelp = !this.temp.showHelp;
     },
     resetForm() {
       this.init()
     },
     addCustomerKey() {
-      if(this.temp.key === "" || this.temp.key == null || this.temp.key == undefined) {
+      if(this.temp.key === "" || this.temp.key == null) {
         const h = this.$createElement;
         this.$notify({
           message: h('i', { style: 'color: red'}, '请输入key')
         });
         return;
       }
-      if(this.temp.value === "" || this.temp.value == null || this.temp.value == undefined) {
+      if(this.temp.value === "" || this.temp.value == null) {
         const h = this.$createElement;
         this.$notify({
           message: h('i', { style: 'color: red'}, '请输入value')

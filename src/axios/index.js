@@ -88,6 +88,4 @@ instance.interceptors
     return Promise.reject(error)
   });
 
-
-
 export default instance
