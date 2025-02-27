@@ -11,6 +11,7 @@
                                 :disabled="dbForm.system.process !== 1">
                   <el-radio label="MYSQL" border>MYSQL</el-radio>
                   <el-radio label="ORACLE" border>Oracle</el-radio>
+                  <el-radio label="PGSQL" border>PostgreSQL</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -685,6 +686,12 @@ export default {
         this.dbForm.dbConfig.driverClassName = 'oracle.jdbc.OracleDriver'
         this.dbForm.dbConfig.port = 1521;
         this.dbForm.dbConfig.sid = 'orcl';
+      }
+      if ($event === 'PGSQL') {
+        this.dbForm.dbConfig.driverClassName = 'org.postgresql.Driver'
+        this.dbForm.dbConfig.port = 5432;
+        this.dbForm.dbConfig.username = 'postgres';
+        this.dbForm.dbConfig.password = 'postgres';
       }
     },
     changeOrm($event) {

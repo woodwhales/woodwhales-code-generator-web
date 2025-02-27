@@ -3,6 +3,8 @@
 > woodwhales-code-generator-web
 >
 > 后台服务：https://github.com/woodwhales/woodwhales-code-generator
+>
+> node版本：v20.14.0
 
 ## 首页图
 
