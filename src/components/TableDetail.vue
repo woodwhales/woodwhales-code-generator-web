@@ -111,7 +111,7 @@
         </el-form-item>
       </el-form>
     </el-row>
-    <el-row v-show="temp.template !== '' && temp.template != null && temp.template !== undefined">
+    <el-row v-show="temp.template !== undefined && temp.template !== '' && temp.template != null">
       <el-form>
         <el-form-item label-width="120px">
           <el-row :gutter="24">
@@ -311,10 +311,10 @@ export default {
       })
     },
     concertPrimaryKey(row, column) {
-      return column === true ? '是' : '否';
+      return row.primaryKey === true ? '是' : '否';
     },
     concertNullAble(row, column) {
-      return column === true ? '允许' : '不允许';
+      return row.nullAble === true ? '允许' : '不允许';
     }
   },
 
